@@ -8,41 +8,43 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
-    private static final int SERVER_PORT = 2020;
+	private static final int SERVER_PORT = 2020;
 
-    public static void main(String[] args) {
-        try {
-            ServerSocket serverSocket = new ServerSocket(SERVER_PORT);
-            System.out.println("Server is listening on port " + SERVER_PORT);
+	public static void main(String[] args) throws Exception {
+		
 
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                String clientMessage = doReceive(clientSocket);
-                System.out.println("Received: " + clientMessage);
-                
+		String capitalMessage;
+		ServerSocket serverSoket=new ServerSocket(SERVER_PORT);
+		System.out.println("sever running in : "+SERVER_PORT);
+		while(true) {
+			Socket socket=serverSoket.accept();
+			String clientMessage=doReceive(socket);
+			
+			
+			
+			System.out.println("received "+clientMessage);
+			capitalMessage=cpitalizedMessage(clientMessage);
+			
+			doSend(socket,capitalMessage);
+			
+			
+		}
 
-                String capitalizedMessage = doCapitalize(clientMessage);
-                doSend(clientSocket, capitalizedMessage);
-                clientSocket.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+	}
 
-    private static String doReceive(Socket socket) throws IOException {
-        try (DataInputStream inFromClient = new DataInputStream(new BufferedInputStream(socket.getInputStream()))) {
-            return inFromClient.readLine();
-        }
-    }
+	private static void doSend(Socket socket, String capitalMessage) throws Exception {
+		DataOutputStream outToClient=new DataOutputStream(socket.getOutputStream());
+		outToClient.writeBytes(capitalMessage);
+	}
 
-    private static void doSend(Socket socket, String message) throws IOException {
-        try (DataOutputStream outToClient = new DataOutputStream(socket.getOutputStream())) {
-            outToClient.writeBytes(message + "\n");
-        }
-    }
+	private static String cpitalizedMessage(String clientMessage) {
+		
+		return clientMessage.toUpperCase()+"\n";
+	}
 
-    private static String doCapitalize(String message) {
-        return message.toUpperCase();
-    }
+	private static String doReceive(Socket socket) throws IOException {
+		DataInputStream inFromClient=new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+		return inFromClient.readLine();
+	}
+
 }
