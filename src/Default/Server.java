@@ -19,6 +19,7 @@ public class Server {
                 Socket clientSocket = serverSocket.accept();
                 String clientMessage = doReceive(clientSocket);
                 System.out.println("Received: " + clientMessage);
+                
 
                 String capitalizedMessage = doCapitalize(clientMessage);
                 doSend(clientSocket, capitalizedMessage);
